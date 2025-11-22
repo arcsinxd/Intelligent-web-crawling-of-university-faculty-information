@@ -1,0 +1,6 @@
+# 微信小程序本身不需要Python依赖
+# 但后端需要安装以下依赖：
+
+# 后端依赖（在 web_api 目录下运行）：
+# pip install flask flask-cors httpx pymongo openai beautifulsoup4 scrapy
+

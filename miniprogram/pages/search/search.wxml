@@ -1,0 +1,79 @@
+<!--pages/search/search.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">搜索教师信息</text>
+  </view>
+
+  <view class="search-section">
+    <view class="input-group">
+      <text class="label">按姓名搜索</text>
+      <input 
+        class="input" 
+        type="text" 
+        placeholder="请输入教师姓名"
+        value="{{nameQuery}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <view class="input-group">
+      <text class="label">按学院搜索</text>
+      <input 
+        class="input" 
+        type="text" 
+        placeholder="请输入学院名称"
+        value="{{collegeQuery}}"
+        bindinput="onCollegeInput"
+      />
+    </view>
+
+    <view class="input-group">
+      <text class="label">按研究方向搜索</text>
+      <input 
+        class="input" 
+        type="text" 
+        placeholder="请输入研究方向"
+        value="{{researchQuery}}"
+        bindinput="onResearchInput"
+      />
+    </view>
+
+    <button class="btn btn-search" bindtap="searchTeachers" loading="{{isSearching}}">
+      🔍 {{isSearching ? '搜索中...' : '搜索'}}
+    </button>
+  </view>
+
+  <view class="results-section" wx:if="{{hasSearched}}">
+    <view class="results-header">
+      <text class="results-count">共找到 {{teachers.length}} 条记录</text>
+    </view>
+
+    <view class="teacher-list" wx:if="{{teachers.length > 0}}">
+      <view class="teacher-card" wx:for="{{teachers}}" wx:key="index">
+        <view class="teacher-name">
+          <text class="name">{{item.name || 'N/A'}}</text>
+          <text class="title">({{item.title || 'N/A'}})</text>
+        </view>
+        <view class="teacher-info">
+          <text class="info-item">🏫 院系: {{item.department || 'N/A'}} - {{item.university || 'N/A'}}</text>
+        </view>
+        <view class="teacher-info" wx:if="{{item.email}}">
+          <text class="info-item">📧 邮箱: {{item.email}}</text>
+        </view>
+        <view class="teacher-info" wx:if="{{item.research_interests}}">
+          <text class="info-item">🔬 研究方向: {{item.research_interests}}</text>
+        </view>
+        <view class="teacher-link" wx:if="{{item.profile_url}}">
+          <view class="link-text" bindtap="openProfileUrl" data-url="{{item.profile_url}}">
+            <text>查看个人主页 →</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <text>未找到符合条件的结果</text>
+    </view>
+  </view>
+</view>
+

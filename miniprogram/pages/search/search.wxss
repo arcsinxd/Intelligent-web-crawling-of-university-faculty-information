@@ -1,0 +1,144 @@
+/* pages/search/search.wxss */
+.container {
+  padding: 40rpx;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #0056b3;
+}
+
+.search-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.input-group {
+  margin-bottom: 30rpx;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.input {
+  width: 100%;
+  padding: 24rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.btn {
+  width: 100%;
+  padding: 28rpx;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+}
+
+.btn-search {
+  background-color: #5cb85c;
+  color: #fff;
+}
+
+.results-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.results-header {
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #eee;
+}
+
+.results-count {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.teacher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.teacher-card {
+  background-color: #f8f9fa;
+  border: 2rpx solid #dee2e6;
+  border-radius: 12rpx;
+  padding: 30rpx;
+}
+
+.teacher-name {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 20rpx;
+}
+
+.name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #0056b3;
+  margin-right: 10rpx;
+}
+
+.title {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.teacher-info {
+  margin-bottom: 15rpx;
+}
+
+.info-item {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.teacher-link {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #dee2e6;
+}
+
+.teacher-link navigator,
+.teacher-link .link-text {
+  color: #0056b3;
+  font-size: 26rpx;
+  text-decoration: underline;
+}
+
+.teacher-link .link-text {
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
