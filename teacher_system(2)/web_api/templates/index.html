@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全自动高校教师信息系统</title>
+    <style>
+        :root {
+            --primary-color: #2563eb; /* 科技蓝 */
+            --primary-hover: #1d4ed8;
+            --danger-color: #ef4444;   /* 警告红 */
+            --danger-hover: #dc2626;
+            --success-color: #10b981;  /* 成功绿 */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* 顶部导航 */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            margin-top: 0.5rem;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* 主容器 */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title.admin { color: var(--danger-color); }
+        .card-title.search { color: var(--primary-color); }
+
+        /* 表单元素 */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-row input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box; /* 重要：防止padding撑破宽度 */
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* 按钮 */
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:active { transform: translateY(1px); }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); shadow: var(--shadow-md); }
+
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+
+        .btn-success { background-color: var(--success-color); color: white; }
+
+        /* 状态栏 */
+        .status-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none; /* 默认隐藏 */
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .status-running { background-color: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; display: block; }
+        .status-finished { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; display: block; }
+        .status-error { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
+
+        /* 搜索结果网格布局 */
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* 教师卡片美化 */
+        .teacher-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .teacher-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .t-name { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; }
+        .t-title { font-size: 0.9rem; color: var(--text-sub); background: #eff6ff; padding: 2px 8px; border-radius: 12px; display: inline-block; margin-bottom: 0.8rem;}
+        .t-info { font-size: 0.9rem; color: #4b5563; margin-bottom: 0.5rem; }
+        .t-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .t-link a:hover { text-decoration: underline; }
+
+        /* Admin 区域折叠/展开 (可选视觉优化) */
+        .admin-section {
+            border-top: 4px solid var(--danger-color);
+        }
+
+        /* 提示文本 */
+        .hint-text {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 1rem;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>🎓 高校教师信息全自动系统</h1>
+        <p>基于 AI 驱动的自动化数据采集与检索引擎</p>
+    </header>
+
+    <div class="main-container">
+
+        <section class="card">
+            <div class="card-title search">
+                <span>🔍</span> 数据查询
+            </div>
+            <div class="form-row">
+                <input type="text" id="nameInput" placeholder="姓名 (例如: 张三)">
+                <input type="text" id="collegeInput" placeholder="学院 (例如: 计算机)">
+                <input type="text" id="researchInput" placeholder="研究方向 (例如: 人工智能)">
+            </div>
+            <div style="margin-top: 1rem; text-align: right;">
+                <button id="searchBtn" class="btn-primary">开始搜索</button>
+            </div>
+
+            <div id="results">
+                <div style="grid-column: 1/-1; text-align: center; color: #9ca3af; padding: 2rem;">
+                    请输入条件并点击搜索...
+                </div>
+            </div>
+        </section>
+
+
+        <section class="card admin-section">
+            <div class="card-title admin">
+                <span>⚙️</span> 管理员控制台：数据采集
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <label for="masterUrlInput">方案 A: 全流程自动化采集 (推荐)</label>
+                <p class="hint-text">输入大学的“院系设置”总览页面，AI 将自动分析所有学院链接并批量抓取。</p>
+                <div class="form-row">
+                    <input type="text" id="masterUrlInput" value="https://www.pku.edu.cn/department.html" placeholder="请输入大学院系入口 URL">
+                    <button id="fullAutomationBtn" class="btn-danger" style="flex: 0 0 auto;">🚀 启动全自动采集</button>
+                </div>
+                <div id="fullAutomationStatus" class="status-box"></div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;">
+
+            <div>
+                <label>方案 B: 手动单学院采集 (备用)</label>
+                <p class="hint-text">如果全自动失败，可在此手动输入单个学院的师资列表网址进行补充。</p>
+                <div class="form-row">
+                    <input type="text" id="collegeInputManual" placeholder="学院名称 (如: 化学系)">
+                    <input type="text" id="urlInputManual" placeholder="师资列表网址 (URL)">
+                    <button id="generateBtn" class="btn-primary" style="background-color: #4b5563;">🤖 生成配方并采集</button>
+                </div>
+                <div id="status" class="status-box"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        let jobPoller = null; 
+
+        // --- 检查后台任务状态 ---
+        async function checkJobStatus() {
+            let statusEl = document.getElementById('fullAutomationStatus');
+            try {
+                let response = await fetch('/api/check-status');
+                let result = await response.json();
+
+                statusEl.innerHTML = ''; // 清空内容
+
+                // 添加加载图标或状态图标
+                let icon = '';
+                let statusClass = '';
+
+                if (result.status === 'running') {
+                    icon = '⏳ ';
+                    statusClass = 'status-running';
+                    statusEl.textContent = icon + " " + result.message;
+                } else if (result.status === 'finished') {
+                    icon = '✅ ';
+                    statusClass = 'status-finished';
+                    statusEl.textContent = icon + " " + result.message;
+                    clearInterval(jobPoller);
+                    alert("🎉 全流程自动化已完成！数据已入库，您可以开始搜索了。");
+                } else if (result.status === 'error') {
+                    icon = '❌ ';
+                    statusClass = 'status-error';
+                    statusEl.textContent = icon + " " + result.message;
+                    clearInterval(jobPoller);
+                }
+
+                statusEl.className = 'status-box ' + statusClass;
+
+            } catch (error) {
+                statusEl.textContent = `❌ 轮询失败: ${error.message}`;
+                statusEl.className = 'status-box status-error';
+                clearInterval(jobPoller);
+            }
+        }
+
+        // --- 全流程自动化按钮 ---
+        document.getElementById('fullAutomationBtn').addEventListener('click', async () => {
+            let statusEl = document.getElementById('fullAutomationStatus');
+            let masterUrl = document.getElementById('masterUrlInput').value;
+            
+            if (!masterUrl) {
+                alert("请输入网址！");
+                return;
+            }
+
+            if (!confirm("⚠️ 高负载警告\n\n确定要启动全流程自动化吗？\n这将扫描整个网站，耗时可能超过 10 分钟。")) {
+                return;
+            }
+            
+            statusEl.textContent = '🚀 正在启动引擎，请稍候...';
+            statusEl.className = 'status-box status-running';
+            
+            try {
+                let response = await fetch('/api/start-full-automation', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ master_url: masterUrl })
+                });
+                let result = await response.json();
+                
+                if (!response.ok) {
+                    statusEl.innerHTML = `❌ 启动失败: ${result.message}`;
+                    statusEl.className = 'status-box status-error';
+                } else {
+                    if (jobPoller) clearInterval(jobPoller);
+                    jobPoller = setInterval(checkJobStatus, 3000);
+                }
+            } catch (error) {
+                statusEl.innerHTML = `❌ 请求失败: ${error.message}`;
+                statusEl.className = 'status-box status-error';
+            }
+        });
+
+        // --- 页面加载时检查状态 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            checkJobStatus();
+            let statusEl = document.getElementById('fullAutomationStatus');
+            if (statusEl.classList.contains('status-running')) {
+                if (jobPoller) clearInterval(jobPoller);
+                jobPoller = setInterval(checkJobStatus, 3000);
+            }
+        });
+
+        // --- 搜索功能 ---
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            let resultsDiv = document.getElementById('results');
+            let btn = document.getElementById('searchBtn');
+            
+            // 简单的加载动画
+            btn.textContent = '搜索中...';
+            btn.disabled = true;
+            resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;">⏳ 正在检索数据库...</div>';
+
+            let name = document.getElementById('nameInput').value;
+            let college = document.getElementById('collegeInput').value;
+            let research = document.getElementById('researchInput').value;
+            let queryParams = new URLSearchParams();
+            if (name) queryParams.append('name', name);
+            if (college) queryParams.append('college', college);
+            if (research) queryParams.append('research', research);
+
+            try {
+                let response = await fetch(`/api/search?${queryParams.toString()}`);
+                let result = await response.json();
+                
+                if(response.ok && result.status === 'success') {
+                    if (result.data.length === 0) {
+                        resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#666;">📭 未找到符合条件的教师信息。</div>';
+                    } else {
+                        resultsDiv.innerHTML = ''; // 清空 loading
+                        // 顶部显示结果数量
+                        let countInfo = document.createElement('div');
+                        countInfo.style.gridColumn = '1/-1';
+                        countInfo.style.color = '#6b7280';
+                        countInfo.style.marginBottom = '10px';
+                        countInfo.innerHTML = `共找到 <b>${result.data.length}</b> 条记录`;
+                        resultsDiv.appendChild(countInfo);
+
+                        result.data.forEach(teacher => {
+                            let card = document.createElement('div');
+                            card.className = 'teacher-card';
+                            card.innerHTML = `
+                                <div class="t-name">${teacher.name || '未知姓名'}</div>
+                                <div class="t-title">${teacher.title || '教师'}</div>
+                                <div class="t-info">🏫 <strong>${teacher.university}</strong> - ${teacher.department || ''}</div>
+                                <div class="t-info">📧 ${teacher.email || '暂无邮箱'}</div>
+                                <div class="t-info">🔬 ${teacher.research_interests || '无特定研究方向'}</div>
+                                <div class="t-link" style="margin-top:10px; padding-top:10px; border-top:1px dashed #eee;">
+                                    <a href="${teacher.profile_url}" target="_blank">🔗 查看官方个人主页</a>
+                                </div>
+                            `;
+                            resultsDiv.appendChild(card);
+                        });
+                    }
+                } else {
+                    resultsDiv.innerHTML = `<div style="color:red;">加载失败: ${result.message}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div style="color:red;">网络请求失败: ${error.message}</div>`;
+            } finally {
+                btn.textContent = '开始搜索';
+                btn.disabled = false;
+            }
+        });
+
+        // --- 手动采集 ---
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            let statusEl = document.getElementById('status');
+            let college = document.getElementById('collegeInputManual').value;
+            let url = document.getElementById('urlInputManual').value;
+            let btn = document.getElementById('generateBtn');
+
+            if (!college || !url) {
+                alert('请填写完整的学院名称和网址！');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '正在分析...';
+            statusEl.innerHTML = '⏳ 正在下载网页并请求 AI 生成配方...';
+            statusEl.className = 'status-box status-running';
+
+            try {
+                let response = await fetch('/api/generate-recipe', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ college: college, url: url })
+                });
+                let result = await response.json();
+                if (response.ok && result.status === 'success') {
+                    statusEl.innerHTML = `
+                        <div style="font-weight:bold; margin-bottom:10px;">✅ ${result.message}</div>
+                        <div style="font-size:0.8em; color:#666;">配方概览:</div>
+                        <pre>${JSON.stringify(result.recipe, null, 2)}</pre>
+                    `;
+                    statusEl.className = 'status-box status-finished';
+                } else {
+                    statusEl.innerHTML = `❌ 生成失败: ${result.message}`;
+                    statusEl.className = 'status-box status-error';
+                }
+            } catch (error) {
+                statusEl.innerHTML = `❌ 网络错误: ${error.message}`;
+                statusEl.className = 'status-box status-error';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🤖 生成配方并采集';
+            }
+        });
+    </script>
+</body>
+</html>

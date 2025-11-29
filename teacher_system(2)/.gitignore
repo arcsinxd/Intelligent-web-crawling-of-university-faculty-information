@@ -1,0 +1,8 @@
+# 排除Python虚拟环境
+venv/
+# 排除Python缓存文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# 可选：如果有其他临时文件/目录，也可以添加进来
